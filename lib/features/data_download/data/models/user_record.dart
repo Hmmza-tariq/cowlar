@@ -4,7 +4,7 @@ part 'user_record.g.dart';
 
 @collection
 class UserRecord {
-  Id id = Isar.autoIncrement; // Auto increment id
+  Id id = Isar.autoIncrement;
 
   @Index(type: IndexType.value)
   late String userId;
@@ -21,17 +21,7 @@ class UserRecord {
   @Index(type: IndexType.value)
   late DateTime createdAt;
 
-  // Default constructor required for Isar
   UserRecord();
-
-  // Factory to create a dummy record
-  factory UserRecord.dummy(int index) {
-    return UserRecord()
-      ..userId = 'user_$index'
-      ..name = 'User $index'
-      ..email = 'user$index@example.com'
-      ..createdAt = DateTime.now();
-  }
 
   @override
   String toString() {

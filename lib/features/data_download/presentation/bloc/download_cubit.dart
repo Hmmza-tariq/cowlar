@@ -25,7 +25,6 @@ class DownloadCubit extends Bloc<DownloadEvent, DownloadState> {
     on<ClearRecordsEvent>(_handleClearRecords);
   }
 
-  // Add a public method to access the record count
   Future<int> getRecordCount() async {
     return await _isarService.getRecordCount();
   }
