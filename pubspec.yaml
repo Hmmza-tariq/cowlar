@@ -1,0 +1,80 @@
+name: cowlar
+description: "A new Flutter project."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.6.0
+
+dependencies:
+  bloc: ^9.0.0
+  dartz: ^0.10.1
+  dio: ^5.8.0+1
+  equatable: ^2.0.7
+  flutter:
+    sdk: flutter
+  flutter_bloc: ^9.1.1
+  flutter_native_splash: ^2.4.4
+  get_it: ^8.0.3
+  intl: ^0.20.2
+  mqtt_client: ^10.5.1
+  shared_preferences: ^2.5.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_flavorizr: ^2.3.1
+  flutter_launcher_icons: ^0.14.3
+
+flutter:
+  uses-material-design: true
+
+
+  assets:
+    - assets/icons/icon.png
+    - assets/icons/icon_prod.png
+    - assets/icons/icon_stage.png
+    - assets/icons/icon_dev.png
+    
+flavorizr:
+  ide: 'vscode'
+  flavors:
+    cowlar_dev:
+      app:
+        name: "Cowlar Dev"
+      android:
+        applicationId: "com.hexagone.cowlar_dev"  
+        icon: "assets/icons/icon_dev.png"
+
+    cowlar_stage:
+      app:
+        name: "Cowlar Stage"
+    
+      android:
+        applicationId: "com.hexagone.cowlar_stage"
+        icon: "assets/icons/icon_stage.png"
+
+    cowlar_prod:
+      app:
+        name: "Cowlar Prod"
+      android:
+        applicationId: "com.hexagone.cowlar_prod"
+        icon: "assets/icons/icon_prod.png"
+
+
+# flutter_launcher_icons:
+#   android: "launcher_icon"
+#   ios: false
+#   image_path: "assets/icons/icon.png"
+#   min_sdk_android: 21  
+
+
+# flutter_native_splash:
+#   color: "#ffffff"
+#   image: assets/icons/icon.png
+#   android: true
+#   ios: false
+#   web: false
+#   fullscreen: true
+#   android_gravity: center

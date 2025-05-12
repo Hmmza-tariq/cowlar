@@ -1,0 +1,8 @@
+flutter_native_splash:
+  color: "#9E9E9E"
+  image: assets/icons/icon_stage.png
+  android: true
+  ios: false
+  web: false
+  fullscreen: true
+  android_gravity: center

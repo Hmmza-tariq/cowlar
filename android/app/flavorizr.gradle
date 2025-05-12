@@ -1,0 +1,21 @@
+android {
+    flavorDimensions += "flavor-type"
+
+    productFlavors {
+        cowlar_dev {
+            dimension "flavor-type"
+            applicationId "com.hexagone.cowlar_dev"
+            resValue "string", "app_name", "Cowlar Dev"
+        }
+        cowlar_stage {
+            dimension "flavor-type"
+            applicationId "com.hexagone.cowlar_stage"
+            resValue "string", "app_name", "Cowlar Stage"
+        }
+        cowlar_prod {
+            dimension "flavor-type"
+            applicationId "com.hexagone.cowlar_prod"
+            resValue "string", "app_name", "Cowlar Prod"
+        }
+    }
+}
