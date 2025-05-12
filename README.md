@@ -1,2 +1,0 @@
-# Cowlar Flutter App
-
