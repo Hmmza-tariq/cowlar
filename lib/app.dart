@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/services/mqtt_service.dart';
+import 'core/theme/app_theme.dart';
+import 'features/mqtt_client/presentation/bloc/mqtt_cubit.dart';
+import 'features/mqtt_client/presentation/pages/mqtt_page.dart';
 import 'flavors.dart';
-import 'main_screen.dart';
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -11,14 +14,18 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
-      providers: [],
+      providers: [
+        BlocProvider<MqttCubit>(
+          create: (context) => MqttCubit(mqttService: MqttService()),
+        ),
+      ],
       child: MaterialApp(
         title: F.title,
         debugShowCheckedModeBanner: false,
-        // theme: AppTheme.lightTheme,
-        // darkTheme: AppTheme.darkTheme,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
         themeMode: ThemeMode.system,
-        home: _flavorBanner(child: const MainScreen(), show: kDebugMode),
+        home: _flavorBanner(child: const MqttPage(), show: kDebugMode),
       ),
     );
   }

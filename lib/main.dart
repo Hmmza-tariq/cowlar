@@ -2,8 +2,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'app.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+import 'app.dart';
 import 'flavors.dart';
 
 const String appFlavor =
@@ -11,6 +12,9 @@ const String appFlavor =
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Load environment variables
+  await dotenv.load(fileName: '.env');
 
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,

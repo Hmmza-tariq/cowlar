@@ -14,6 +14,7 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^9.1.1
+  flutter_dotenv: ^5.2.1
   flutter_native_splash: ^2.4.4
   get_it: ^8.0.3
   intl: ^0.20.2
@@ -36,6 +37,7 @@ flutter:
     - assets/icons/icon_prod.png
     - assets/icons/icon_stage.png
     - assets/icons/icon_dev.png
+    - .env
     
 flavorizr:
   ide: 'vscode'
@@ -62,19 +64,4 @@ flavorizr:
         applicationId: "com.hexagone.cowlar_prod"
         icon: "assets/icons/icon_prod.png"
 
-
-# flutter_launcher_icons:
-#   android: "launcher_icon"
-#   ios: false
-#   image_path: "assets/icons/icon.png"
-#   min_sdk_android: 21  
-
-
-# flutter_native_splash:
-#   color: "#ffffff"
-#   image: assets/icons/icon.png
-#   android: true
-#   ios: false
-#   web: false
-#   fullscreen: true
-#   android_gravity: center
+ 
