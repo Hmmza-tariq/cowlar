@@ -116,19 +116,21 @@ class MqttService {
     }
 
     _client!.subscribe(topic, MqttQos.atLeastOnce);
-    _currentTopic = topic;
-
-    // Listen for messages
+    _currentTopic = topic; // Listen for messages
     _client!.updates!.listen((List<MqttReceivedMessage<MqttMessage>> messages) {
       final MqttPublishMessage receivedMessage =
           messages[0].payload as MqttPublishMessage;
       final String message = MqttPublishPayload.bytesToStringAsString(
           receivedMessage.payload.message);
 
+      // Debug message reception
+      debugPrint('MQTT Message Received: "$message"');
+
       _receivedMessages.add(message);
 
       // Notify listeners
       for (var listener in _messageListeners) {
+        debugPrint('Notifying MQTT listener about message: "$message"');
         listener(message);
       }
     });

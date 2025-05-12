@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../data_download/presentation/pages/data_download_page.dart';
+import '../../../data_download/presentation/bloc/download_cubit.dart';
 import '../bloc/mqtt_cubit.dart';
 import '../bloc/mqtt_event.dart';
 import '../bloc/mqtt_state.dart';
@@ -40,6 +42,30 @@ class _MqttPageState extends State<MqttPage> {
       appBar: AppBar(
         title: const Text('MQTT Client Demo'),
         actions: [
+          // Download button when data is available
+          FutureBuilder<int>(
+              future: _checkRecordCount(context),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox.shrink();
+                }
+
+                final recordCount = snapshot.data ?? 0;
+                if (recordCount > 0) {
+                  return IconButton(
+                    icon: const Icon(Icons.data_array),
+                    tooltip: 'View Downloaded Data ($recordCount records)',
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                            builder: (_) => const DataDownloadPage()),
+                      );
+                    },
+                  );
+                }
+                return const SizedBox.shrink();
+              }),
+          // Connect/disconnect button
           BlocBuilder<MqttCubit, MqttState>(
             builder: (context, state) {
               return IconButton(
@@ -67,6 +93,13 @@ class _MqttPageState extends State<MqttPage> {
                 duration: const Duration(seconds: 3),
               ),
             );
+          }
+
+          // Debug listener for state changes
+          print(
+              'MqttState changed: isConnected=${state.isConnected}, isSubscribed=${state.isSubscribed}, shouldDownload=${state.shouldDownload}, messages=${state.messages.length}');
+          if (state.shouldDownload) {
+            print('STATE HAS shouldDownload=true!');
           }
         },
         builder: (context, state) {
@@ -209,30 +242,74 @@ class _MqttPageState extends State<MqttPage> {
                     ), // Messages section (only shown when subscribed)
                   if (state.isSubscribed) ...[
                     const SizedBox(height: 16),
-                    const Row(
+                    Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
+                        const Text(
                           'Received Messages:',
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                         ),
-                        Chip(
-                          label: Icon(Icons.check_circle, size: 16),
-                          backgroundColor: Colors.green,
-                          labelStyle: TextStyle(color: Colors.white),
-                          avatar: Icon(Icons.notifications_active,
-                              color: Colors.white, size: 14),
-                          labelPadding: EdgeInsets.symmetric(horizontal: 4),
-                        ),
+                        if (state.shouldDownload)
+                          Builder(builder: (context) {
+                            // Debug print when download button is shown
+                            print(
+                                'Showing download button - shouldDownload is true');
+                            return ElevatedButton.icon(
+                              onPressed: () {
+                                print(
+                                    'Download button pressed - navigating to DataDownloadPage');
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (_) => const DataDownloadPage(),
+                                  ),
+                                );
+                                // Reset download trigger after navigation
+                                context
+                                    .read<MqttCubit>()
+                                    .add(const MqttResetDownloadTriggerEvent());
+                              },
+                              icon: const Icon(Icons.download),
+                              label: const Text('Download Data'),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.green,
+                                foregroundColor: Colors.white,
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 12, vertical: 4),
+                              ),
+                            );
+                          })
+                        else
+                          const Chip(
+                            label: Icon(Icons.check_circle, size: 16),
+                            backgroundColor: Colors.green,
+                            labelStyle: TextStyle(color: Colors.white),
+                            avatar: Icon(Icons.notifications_active,
+                                color: Colors.white, size: 14),
+                            labelPadding: EdgeInsets.symmetric(horizontal: 4),
+                          ),
                       ],
                     ),
-                    const SizedBox(
-                        height:
-                            8), // Message list - with fixed height to prevent overflow
+                    const SizedBox(height: 8),
                     SizedBox(
+                      // Message list - with fixed height to prevent overflow                    SizedBox(
                       height: 200, // Fixed height for message list
-                      child: MessageList(messages: state.messages),
+                      child: Column(
+                        children: [
+                          if (state.shouldDownload)
+                            Container(
+                              color: Colors.amber,
+                              padding: const EdgeInsets.all(8),
+                              child: const Text(
+                                'Download trigger active!',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          Expanded(
+                            child: MessageList(messages: state.messages),
+                          ),
+                        ],
+                      ),
                     ),
                   ] else
                     SizedBox(
@@ -312,5 +389,17 @@ class _MqttPageState extends State<MqttPage> {
         },
       ),
     );
+  }
+
+  // Add the _checkRecordCount method to access IsarService through DownloadCubit
+  Future<int> _checkRecordCount(BuildContext context) async {
+    try {
+      final downloadCubit = context.read<DownloadCubit>();
+      // Use DownloadCubit to access IsarService and get record count
+      return await downloadCubit.getRecordCount();
+    } catch (e) {
+      debugPrint('Error checking record count: $e');
+      return 0;
+    }
   }
 }

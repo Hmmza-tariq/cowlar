@@ -56,3 +56,13 @@ class MqttMessageReceivedEvent extends MqttEvent {
   @override
   List<Object?> get props => [message];
 }
+
+/// Event to trigger data download on specific message
+class MqttTriggerDownloadEvent extends MqttEvent {
+  const MqttTriggerDownloadEvent();
+}
+
+/// Event to reset download trigger flag
+class MqttResetDownloadTriggerEvent extends MqttEvent {
+  const MqttResetDownloadTriggerEvent();
+}

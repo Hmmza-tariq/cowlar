@@ -7,7 +7,6 @@ import 'mqtt_state.dart';
 /// Cubit to manage MQTT connections and states
 class MqttCubit extends Bloc<MqttEvent, MqttState> {
   final MqttService _mqttService;
-
   MqttCubit({required MqttService mqttService})
       : _mqttService = mqttService,
         super(MqttState.initial()) {
@@ -18,6 +17,8 @@ class MqttCubit extends Bloc<MqttEvent, MqttState> {
     on<MqttUnsubscribeEvent>(_handleUnsubscribe);
     on<MqttPublishEvent>(_handlePublish);
     on<MqttMessageReceivedEvent>(_handleMessageReceived);
+    on<MqttTriggerDownloadEvent>(_handleTriggerDownload);
+    on<MqttResetDownloadTriggerEvent>(_handleResetDownloadTrigger);
 
     // Listen for messages
     _mqttService.addMessageListener(_onMessageReceived);
@@ -109,12 +110,50 @@ class MqttCubit extends Bloc<MqttEvent, MqttState> {
   void _handleMessageReceived(
       MqttMessageReceivedEvent event, Emitter<MqttState> emit) {
     final List<String> updatedMessages = [...state.messages, event.message];
-    emit(state.copyWith(messages: updatedMessages));
+
+    // Debug: Print when download is detected
+    print('Message received: "${event.message}"');
+
+    // Check if message contains the download trigger phrase
+    if (event.message.toLowerCase().contains('download')) {
+      print('DOWNLOAD KEYWORD DETECTED - Setting shouldDownload directly');
+      // Set the download flag directly instead of using another event
+      emit(state.copyWith(
+        messages: updatedMessages,
+        shouldDownload: true,
+      ));
+    } else {
+      emit(state.copyWith(messages: updatedMessages));
+    }
+  }
+
+  /// Handle download trigger event
+  void _handleTriggerDownload(
+      MqttTriggerDownloadEvent event, Emitter<MqttState> emit) {
+    print('_handleTriggerDownload called - setting shouldDownload to true');
+    emit(state.copyWith(shouldDownload: true));
+    print('State after update: shouldDownload = ${state.shouldDownload}');
+  }
+
+  /// Handle reset download trigger event
+  void _handleResetDownloadTrigger(
+      MqttResetDownloadTriggerEvent event, Emitter<MqttState> emit) {
+    emit(state.copyWith(shouldDownload: false));
   }
 
   /// Callback for messages from the MQTT service
   void _onMessageReceived(String message) {
+    print('MQTT Service callback: message received - "$message"');
+
+    // Create a message received event
     add(MqttMessageReceivedEvent(message));
+
+    // If message contains download, also trigger download event
+    if (message.toLowerCase().contains('download')) {
+      print(
+          'MQTT Service callback: DOWNLOAD keyword detected - triggering download event');
+      add(const MqttTriggerDownloadEvent());
+    }
   }
 
   @override

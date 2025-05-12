@@ -4,6 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/services/mqtt_service.dart';
 import 'core/theme/app_theme.dart';
+import 'features/data_download/data/services/data_download_service.dart';
+import 'features/data_download/data/services/isar_service.dart';
+import 'features/data_download/presentation/bloc/download_cubit.dart';
 import 'features/mqtt_client/presentation/bloc/mqtt_cubit.dart';
 import 'features/mqtt_client/presentation/pages/mqtt_page.dart';
 import 'flavors.dart';
@@ -17,6 +20,12 @@ class App extends StatelessWidget {
       providers: [
         BlocProvider<MqttCubit>(
           create: (context) => MqttCubit(mqttService: MqttService()),
+        ),
+        BlocProvider<DownloadCubit>(
+          create: (context) => DownloadCubit(
+            downloadService: DataDownloadService(),
+            isarService: IsarService(),
+          ),
         ),
       ],
       child: MaterialApp(

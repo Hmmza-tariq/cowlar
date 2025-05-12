@@ -7,6 +7,7 @@ class MqttState extends Equatable {
   final List<String> messages;
   final bool isLoading;
   final String? error;
+  final bool shouldDownload; // Flag to trigger data download
 
   const MqttState({
     this.isConnected = false,
@@ -15,8 +16,8 @@ class MqttState extends Equatable {
     this.messages = const [],
     this.isLoading = false,
     this.error,
+    this.shouldDownload = false,
   });
-
   MqttState copyWith({
     bool? isConnected,
     bool? isSubscribed,
@@ -24,6 +25,7 @@ class MqttState extends Equatable {
     List<String>? messages,
     bool? isLoading,
     String? error,
+    bool? shouldDownload,
   }) {
     return MqttState(
       isConnected: isConnected ?? this.isConnected,
@@ -32,6 +34,7 @@ class MqttState extends Equatable {
       messages: messages ?? this.messages,
       isLoading: isLoading ?? this.isLoading,
       error: error ?? this.error,
+      shouldDownload: shouldDownload ?? this.shouldDownload,
     );
   }
 
@@ -44,8 +47,14 @@ class MqttState extends Equatable {
   }
 
   factory MqttState.initial() => const MqttState();
-
   @override
-  List<Object?> get props =>
-      [isConnected, isSubscribed, topic, messages, isLoading, error];
+  List<Object?> get props => [
+        isConnected,
+        isSubscribed,
+        topic,
+        messages,
+        isLoading,
+        error,
+        shouldDownload
+      ];
 }
